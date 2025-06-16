@@ -322,10 +322,14 @@ async function optimizeRoute() {
     console.log('vehiclesData:', vehiclesData);
     console.log('deliveriesData:', deliveriesData);
     
+    // 最低道幅の設定を取得
+    const minRoadWidth = parseFloat(document.getElementById('min-road-width').value) || 0;
+    
     const requestData = {
         depot: depot,
         deliveries: deliveriesData,
-        vehicles: vehiclesData
+        vehicles: vehiclesData,
+        min_road_width: minRoadWidth
     };
     
     console.log('Sending request:', requestData);
@@ -451,6 +455,13 @@ async function displayRoutes(optimizedRoutes, vehiclesData) {
         
         let routeHtml = `<div class="route-info">
             <h3>${vehicle.name} のルート</h3>`;
+        
+        // 道幅制限の情報を表示
+        if (route.road_width_notice) {
+            routeHtml += `<div style="background-color: #e3f2fd; padding: 10px; margin: 10px 0; border-radius: 5px;">
+                <strong>🚚 ${route.road_width_notice}</strong>
+            </div>`;
+        }
         
         // reload_infoがある場合は分割配送情報を表示
         console.log('Route:', route);

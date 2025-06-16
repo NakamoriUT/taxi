@@ -126,6 +126,32 @@ button:hover {
     background-color: #c0392b;
 }
 
+.route-settings {
+    margin-top: 10px;
+}
+
+.route-settings label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.route-settings select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.route-settings .help-text {
+    font-size: 12px;
+    color: #666;
+    margin: 5px 0;
+}
+
 #map {
     height: 400px;
     margin-bottom: 20px;

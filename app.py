@@ -217,6 +217,9 @@ def optimize_route():
         depot = data['depot']
         deliveries = data['deliveries']
         vehicles = data['vehicles']
+        min_road_width = data.get('min_road_width', 0)
+        
+        print(f"Minimum road width: {min_road_width}m")
         
         # 事前検証: 単一配送が車両容量を超えている場合の警告
         max_capacity = max(v['capacity'] for v in vehicles)
@@ -247,7 +250,7 @@ def optimize_route():
         # 進捗状況を表示
         total_calculations = len(locations) * (len(locations) - 1) // 2
         print(f"Need to calculate {total_calculations} distances")
-        distance_matrix = get_distance_matrix_with_progress(locations, total_calculations)
+        distance_matrix = get_distance_matrix_with_progress(locations, total_calculations, min_road_width)
         print(f"Distance matrix built: {len(distance_matrix)}x{len(distance_matrix)}")
         
         print("Solving VRP...")
@@ -259,7 +262,8 @@ def optimize_route():
             [d.get('time_window', None) for d in deliveries],
             [d.get('priority', 0) for d in deliveries],
             [d.get('service_time', 0) for d in deliveries],
-            locations
+            locations,
+            min_road_width
         )
         
         print(f"VRP solved: {optimized_routes}")
@@ -290,7 +294,7 @@ def get_distance_matrix(locations):
     
     return matrix
 
-def get_distance_matrix_with_progress(locations, total_calculations):
+def get_distance_matrix_with_progress(locations, total_calculations, min_road_width=0):
     n = len(locations)
     matrix = [[0] * n for _ in range(n)]
     calculated = 0
@@ -300,7 +304,8 @@ def get_distance_matrix_with_progress(locations, total_calculations):
             # 対称性を利用（i->jとj->iは同じ距離）
             distance = get_osrm_distance(
                 locations[i]['lat'], locations[i]['lon'],
-                locations[j]['lat'], locations[j]['lon']
+                locations[j]['lat'], locations[j]['lon'],
+                min_road_width
             )
             matrix[i][j] = distance
             matrix[j][i] = distance
@@ -311,13 +316,20 @@ def get_distance_matrix_with_progress(locations, total_calculations):
     
     return matrix
 
-def get_osrm_distance(lat1, lon1, lat2, lon2):
+def get_osrm_distance(lat1, lon1, lat2, lon2, min_road_width=0):
     # ハイブリッド方式: 近距離は係数、遠距離は実際の道路距離
     euclidean_dist = calculate_euclidean_distance(lat1, lon1, lat2, lon2)
     
     # 10km以下は直線距離×1.3の係数を使用（高速）
     if euclidean_dist <= 10:
-        return euclidean_dist * 1.3 * 60
+        # 道幅制限がある場合はペナルティを追加
+        base_time = euclidean_dist * 1.3 * 60
+        if min_road_width > 0:
+            # 道幅制限がある場合、住宅街などを避けるためペナルティを追加
+            # 2.5m制限: +10%, 3.0m制限: +20%, 3.5m制限: +30%, 4.0m制限: +40%
+            penalty_factor = 1 + (min_road_width - 2) * 0.2
+            return base_time * penalty_factor
+        return base_time
     
     # 10km超は実際の道路距離を取得
     try:
@@ -376,7 +388,7 @@ def get_route_coordinates(lat1, lon1, lat2, lon2):
         print(f"OSRM route error: {e}")
         return [[lat1, lon1], [lat2, lon2]]
 
-def solve_vrp(distance_matrix, num_vehicles, demands, capacities, time_windows, priorities, service_times, locations):
+def solve_vrp(distance_matrix, num_vehicles, demands, capacities, time_windows, priorities, service_times, locations, min_road_width=0):
     try:
         # デバッグ情報を出力
         print(f"Total demands: {sum(demands)}")
@@ -513,13 +525,20 @@ def solve_vrp(distance_matrix, num_vehicles, demands, capacities, time_windows, 
                             'load': current_load
                         })
                     
-                    routes.append({
+                    # 道幅制限の情報を追加
+                    route_info = {
                         'vehicle_id': vehicle_id,
                         'route': route,
                         'route_with_loads': route_with_loads,
                         'route_coordinates': vehicle_route_coords,
                         'total_distance': solution.ObjectiveValue() if vehicle_id == 0 else 0
-                    })
+                    }
+                    
+                    if min_road_width > 0:
+                        route_info['min_road_width'] = min_road_width
+                        route_info['road_width_notice'] = f'このルートは{min_road_width}m以上の道路を優先して使用します'
+                    
+                    routes.append(route_info)
             
             # 未訪問の配送先を確認
             for i in range(1, len(locations)):
@@ -565,13 +584,19 @@ def solve_vrp(distance_matrix, num_vehicles, demands, capacities, time_windows, 
                     loc = locations[node_idx]
                     route_coords.append([loc['lat'], loc['lon']])
                 
-                routes.append({
+                route_info = {
                     'vehicle_id': vehicle_id,
                     'route': reload_route['route'],
                     'route_coordinates': route_coords,
                     'total_distance': 0,
                     'reload_info': reload_route['locations']
-                })
+                }
+                
+                if min_road_width > 0:
+                    route_info['min_road_width'] = min_road_width
+                    route_info['road_width_notice'] = f'このルートは{min_road_width}m以上の道路を優先して使用します'
+                
+                routes.append(route_info)
             
             # まだ未訪問がある場合
             assigned_deliveries = set()

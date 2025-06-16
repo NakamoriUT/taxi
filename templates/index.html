@@ -33,6 +33,21 @@
                     <button onclick="addVehicle()">車両を追加</button>
                 </div>
 
+                <div class="section">
+                    <h2>ルート設定</h2>
+                    <div class="route-settings">
+                        <label for="min-road-width">最低道幅（メートル）:</label>
+                        <select id="min-road-width">
+                            <option value="0">制限なし</option>
+                            <option value="2.5">2.5m以上（軽自動車向け）</option>
+                            <option value="3.0">3.0m以上（普通車向け）</option>
+                            <option value="3.5">3.5m以上（大型車向け）</option>
+                            <option value="4.0">4.0m以上（トラック向け）</option>
+                        </select>
+                        <p class="help-text">※狭い道路を避けたい場合は最低道幅を選択してください</p>
+                    </div>
+                </div>
+
                 <button class="optimize-btn" onclick="optimizeRoute()">ルートを最適化</button>
                 
                 <!-- 進捗バー -->
