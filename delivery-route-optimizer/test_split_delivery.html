@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分割配送機能テスト</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-case {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .test-case h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .step {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 3px;
+        }
+        .expected {
+            color: #2ecc71;
+            font-weight: bold;
+        }
+        .info {
+            color: #3498db;
+            font-weight: bold;
+        }
+        code {
+            background-color: #f0f0f0;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .example {
+            background-color: #e8f4fd;
+            padding: 10px;
+            border-left: 4px solid #3498db;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>分割配送機能テスト - 大量荷物の自動分割</h1>
+    
+    <div class="example">
+        <p class="info">新機能について:</p>
+        <p>単一の配送先の荷物量が車両の積載量を超える場合、システムは自動的にその配送を複数回に分割します。
+        例えば、車両容量が100で配送先の荷物量が250の場合、100 + 100 + 50の3回に分けて配送されます。</p>
+    </div>
+    
+    <div class="test-case">
+        <h3>テストケース1: 基本的な分割配送</h3>
+        <div class="step">
+            <strong>手順:</strong>
+            <ol>
+                <li>アプリケーションを起動: <code>python app.py</code></li>
+                <li>ブラウザで <code>http://localhost:5000</code> を開く</li>
+                <li>出発地点を設定（例: 東京駅）</li>
+                <li>配送先を追加</li>
+                <li>配送先の荷物量を <code>250</code> に設定</li>
+                <li>車両の積載量はデフォルトの <code>100</code> のまま</li>
+                <li>「ルートを最適化」ボタンをクリック</li>
+            </ol>
+        </div>
+        <div class="step">
+            <p class="expected">期待される結果:</p>
+            <ul>
+                <li>警告ダイアログが表示: 「配送先1は3回に分割されます」</li>
+                <li>「続行しますか？」で「OK」をクリック</li>
+                <li>ルートに同じ配送先が3回表示される</li>
+                <li>各訪問間にデポへの補充が入る</li>
+                <li>ルート例: デポ → 配送先1(100) → デポ(補充) → 配送先1(100) → デポ(補充) → 配送先1(50) → デポ</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="test-case">
+        <h3>テストケース2: 複数の配送先と分割配送の組み合わせ</h3>
+        <div class="step">
+            <strong>手順:</strong>
+            <ol>
+                <li>配送先を3つ設定:
+                    <ul>
+                        <li>配送先1: 荷物量 <code>150</code></li>
+                        <li>配送先2: 荷物量 <code>80</code></li>
+                        <li>配送先3: 荷物量 <code>60</code></li>
+                    </ul>
+                </li>
+                <li>車両の積載量: <code>100</code></li>
+                <li>「ルートを最適化」ボタンをクリック</li>
+            </ol>
+        </div>
+        <div class="step">
+            <p class="expected">期待される結果:</p>
+            <ul>
+                <li>配送先1のみ分割警告が表示（2回に分割）</li>
+                <li>効率的なルートが生成される</li>
+                <li>例: デポ → 配送先2(80) → デポ(補充) → 配送先1(100) → デポ(補充) → 配送先3(60) → デポ(補充) → 配送先1(50) → デポ</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="test-case">
+        <h3>テストケース3: 複数車両での分割配送</h3>
+        <div class="step">
+            <strong>手順:</strong>
+            <ol>
+                <li>車両を2台に設定:
+                    <ul>
+                        <li>車両1: 積載量 <code>100</code></li>
+                        <li>車両2: 積載量 <code>150</code></li>
+                    </ul>
+                </li>
+                <li>配送先を設定:
+                    <ul>
+                        <li>配送先1: 荷物量 <code>200</code></li>
+                        <li>配送先2: 荷物量 <code>120</code></li>
+                    </ul>
+                </li>
+                <li>「ルートを最適化」ボタンをクリック</li>
+            </ol>
+        </div>
+        <div class="step">
+            <p class="expected">期待される結果:</p>
+            <ul>
+                <li>配送先1は2回分割（車両2の容量150でも超えるため）</li>
+                <li>配送先2は分割不要（車両2で運べる）</li>
+                <li>車両2が大きな荷物を優先的に担当</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="test-case">
+        <h3>テストケース4: リアルタイムバリデーションとの連携</h3>
+        <div class="step">
+            <strong>手順:</strong>
+            <ol>
+                <li>配送先の荷物量を <code>150</code> に設定</li>
+                <li>車両の積載量: <code>100</code></li>
+                <li>荷物量入力時の警告を確認</li>
+                <li>「ルートを最適化」をクリック</li>
+            </ol>
+        </div>
+        <div class="step">
+            <p class="expected">期待される結果:</p>
+            <ul>
+                <li>入力時: 「警告: 荷物量(150)が最大車両容量(100)を超えています」</li>
+                <li>最適化時: 「2回に分割されます」のダイアログ</li>
+                <li>続行すると警告表示がクリアされる</li>
+                <li>分割配送でルートが正常に計算される</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="test-case">
+        <h3>確認ポイント</h3>
+        <div class="step">
+            <p class="info">以下の動作を確認してください:</p>
+            <ul>
+                <li>分割配送の事前警告が表示される</li>
+                <li>ユーザーがキャンセルできる</li>
+                <li>分割された配送がルート表示に明確に示される</li>
+                <li>同じ配送先への複数回訪問が正しく表示される</li>
+                <li>補充のタイミングが適切である</li>
+                <li>アニメーションで車両が同じ場所を複数回訪問する</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
