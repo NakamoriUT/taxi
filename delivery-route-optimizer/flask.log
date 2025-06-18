@@ -1,0 +1,40 @@
+ * Serving Flask app 'app'
+ * Debug mode: on
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:5000
+Press CTRL+C to quit
+ * Restarting with watchdog (fsevents)
+ * Debugger is active!
+ * Debugger PIN: 537-717-975
+127.0.0.1 - - [11/Jun/2025 16:47:44] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [11/Jun/2025 16:49:01] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [11/Jun/2025 16:49:01] "GET /static/css/style.css HTTP/1.1" 304 -
+127.0.0.1 - - [11/Jun/2025 16:49:01] "GET /static/js/app.js HTTP/1.1" 200 -
+127.0.0.1 - - [11/Jun/2025 16:49:07] "POST /reverse_geocode HTTP/1.1" 200 -
+127.0.0.1 - - [11/Jun/2025 16:49:19] "POST /reverse_geocode HTTP/1.1" 200 -
+127.0.0.1 - - [11/Jun/2025 16:49:28] "POST /reverse_geocode HTTP/1.1" 200 -
+127.0.0.1 - - [11/Jun/2025 16:49:41] "POST /reverse_geocode HTTP/1.1" 200 -
+127.0.0.1 - - [11/Jun/2025 16:49:56] "POST /reverse_geocode HTTP/1.1" 200 -
+127.0.0.1 - - [11/Jun/2025 16:50:05] "POST /reverse_geocode HTTP/1.1" 200 -
+ * Detected change in '/Users/nakamoritomomasa/Documents/配送ルート/delivery-route-optimizer/app.py', reloading
+ * Restarting with watchdog (fsevents)
+ * Debugger is active!
+ * Debugger PIN: 537-717-975
+ * Detected change in '/Users/nakamoritomomasa/Documents/配送ルート/delivery-route-optimizer/app.py', reloading
+ * Detected change in '/Users/nakamoritomomasa/Documents/配送ルート/delivery-route-optimizer/app.py', reloading
+ * Restarting with watchdog (fsevents)
+ * Debugger is active!
+ * Debugger PIN: 537-717-975
+127.0.0.1 - - [11/Jun/2025 16:54:05] "GET /test HTTP/1.1" 200 -
+127.0.0.1 - - [11/Jun/2025 17:00:12] "POST /optimize HTTP/1.1" 200 -
+127.0.0.1 - - [11/Jun/2025 17:00:15] "POST /optimize HTTP/1.1" 200 -
+127.0.0.1 - - [11/Jun/2025 17:00:17] "POST /optimize HTTP/1.1" 200 -
+127.0.0.1 - - [11/Jun/2025 17:00:18] "POST /optimize HTTP/1.1" 200 -
+ * Detected change in '/Users/nakamoritomomasa/Documents/配送ルート/delivery-route-optimizer/app.py', reloading
+ * Restarting with watchdog (fsevents)
+ * Debugger is active!
+ * Debugger PIN: 537-717-975
+127.0.0.1 - - [11/Jun/2025 17:01:31] "GET /simple_test HTTP/1.1" 200 -
+127.0.0.1 - - [11/Jun/2025 17:03:36] "POST /optimize HTTP/1.1" 200 -
+127.0.0.1 - - [11/Jun/2025 17:04:23] "POST /optimize HTTP/1.1" 200 -
+127.0.0.1 - - [11/Jun/2025 17:04:28] "GET /simple_test HTTP/1.1" 200 -
