@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>配送ルート最適化アプリ</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>配送ルート最適化アプリ</h1>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <div class="section">
+                    <h2>出発地点</h2>
+                    <input type="text" id="depot-address" placeholder="出発地点の住所を入力">
+                    <button onclick="geocodeDepot()">住所を確認</button>
+                    <button onclick="setDepotByMap()">地図で選択</button>
+                    <div id="depot-result"></div>
+                </div>
+
+                <div class="section">
+                    <h2>配送先</h2>
+                    <div id="deliveries-list"></div>
+                    <button onclick="addDelivery()">配送先を追加</button>
+                </div>
+
+                <div class="section">
+                    <h2>車両設定</h2>
+                    <div id="vehicles-list"></div>
+                    <button onclick="addVehicle()">車両を追加</button>
+                </div>
+
+                <div class="section">
+                    <h2>ルート設定</h2>
+                    <div class="route-settings">
+                        <label for="min-road-width">最低道幅（メートル）:</label>
+                        <select id="min-road-width">
+                            <option value="0">制限なし</option>
+                            <option value="2.5">2.5m以上（軽自動車向け）</option>
+                            <option value="3.0">3.0m以上（普通車向け）</option>
+                            <option value="3.5">3.5m以上（大型車向け）</option>
+                            <option value="4.0">4.0m以上（トラック向け）</option>
+                        </select>
+                        <p class="help-text">※狭い道路を避けたい場合は最低道幅を選択してください</p>
+                    </div>
+                </div>
+
+                <button class="optimize-btn" onclick="optimizeRoute()">ルートを最適化</button>
+                
+                <!-- 進捗バー -->
+                <div id="progress-container" style="display: none;">
+                    <div class="progress-bar-container">
+                        <div id="progress-bar" class="progress-bar"></div>
+                    </div>
+                    <div id="progress-text" class="progress-text">処理中...</div>
+                </div>
+            </div>
+
+            <div class="result-section">
+                <div id="map"></div>
+                <div id="route-results"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
