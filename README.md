@@ -28,16 +28,47 @@ pip install -r requirements.txt
 ```
 
 ### 3. 起動方法
+
+#### 基本的な起動方法
 ```bash
 python app.py
 ```
-
 ブラウザで http://localhost:5000 にアクセス
 
-※ macOSでポート5000が使用中の場合（AirPlay Receiverなど）：
+#### スクリプトを使用した起動
+```bash
+# 実行権限を付与（初回のみ）
+chmod +x start_server.sh
+
+# サーバーを起動
+./start_server.sh
+```
+
+#### ポート番号を変更して起動
+macOSでポート5000が使用中の場合（AirPlay Receiverなど）：
+
+方法1：環境変数を使用
 ```bash
 PORT=8000 python app.py
 ```
+
+方法2：ポート8000用スクリプトを使用
+```bash
+# 実行権限を付与（初回のみ）
+chmod +x start_server_port8000.sh
+
+# サーバーを起動
+./start_server_port8000.sh
+```
+
+#### デバッグモードで起動
+開発時はデバッグモードで起動すると、コードの変更が自動的に反映されます：
+```bash
+FLASK_ENV=development python app.py
+```
+
+#### サーバーの停止
+`Ctrl + C` を押してサーバーを停止
 
 ## 使い方
 
